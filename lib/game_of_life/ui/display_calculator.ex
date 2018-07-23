@@ -7,12 +7,17 @@ defmodule GameOfLife.UI.DisplayCalculator do
 
   @spec compute_display_size(Cells.t()) :: Universe.bounds()
   def compute_display_size(live_cells) do
+    display_limit = Application.get_env(:game_of_life, :display_limit)
     bounds = Application.get_env(:game_of_life, :universe_bounds)
     size = bounds_to_dimension_size(bounds)
-    if size <= Application.get_env(:game_of_life, :display_limit) do
+    if size <= display_limit do
       bounds
     else
-      compute_area_size(bounds, live_cells)
+      {minx, miny, maxx, maxy} = compute_potential_area_size(bounds, live_cells)
+      {minx, maxx} = get_actual_area_size({minx, maxx}, display_limit)
+      {miny, maxy} = get_actual_area_size({miny, maxy}, display_limit)
+      IO.inspect({minx, maxx, miny, maxy})
+      {minx, miny, maxx, maxy}
     end
   end
 
@@ -29,8 +34,8 @@ defmodule GameOfLife.UI.DisplayCalculator do
     col_sep_length - String.length(header) + 1
   end
 
-  @spec compute_area_size(Universe.bounds(), Cells.t()) :: Universe.bounds()
-  defp compute_area_size({bound_minx, bound_miny, bound_maxx, bound_maxy}, live_cells) do
+  @spec compute_potential_area_size(Universe.bounds(), Cells.t()) :: Universe.bounds()
+  defp compute_potential_area_size({bound_minx, bound_miny, bound_maxx, bound_maxy}, live_cells) do
     {minx, miny, maxx, maxy} = live_cells
     |> Enum.reduce(
       {nil, nil, nil, nil},
@@ -45,8 +50,16 @@ defmodule GameOfLife.UI.DisplayCalculator do
     {
       max(minx - @cells_around, bound_minx),
       max(miny - @cells_around, bound_miny),
-      max(maxx - @cells_around, bound_maxx),
-      max(maxy - @cells_around, bound_maxy)
+      min(maxx + @cells_around, bound_maxx),
+      min(maxy + @cells_around, bound_maxy)
     }
+  end
+
+  defp get_actual_area_size({min, max}, display_limit) do
+    if max - min > display_limit do
+      {trunc(-display_limit / 2), trunc(display_limit / 2)}
+    else
+      {min, max}
+    end
   end
 end
