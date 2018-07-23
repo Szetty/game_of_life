@@ -3,6 +3,6 @@
 use Mix.Config
 
 # Tick is the waiting time before generating the new universe
-config :game_of_life, tick: 500
+config :game_of_life, tick: 200
 # Display limit is the maximum number of rows and cells to display
-config :game_of_life, display_limit: 30
+config :game_of_life, display_limit: 35
