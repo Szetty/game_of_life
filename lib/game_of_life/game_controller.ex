@@ -20,7 +20,6 @@ defmodule GameOfLife.GameController do
     receive do
       :tick ->
         handle_tick(live_cells)
-
       {:state, pid} ->
         handle_send_state(live_cells, pid)
     end

@@ -19,4 +19,12 @@ defmodule MathCommonTest do
     assert compute_universe_bounds(5) === {-2, -2, 2, 2}
     assert compute_universe_bounds(10) === {-5, -5, 4, 4}
   end
+
+  test "bounds_to_dimension_size" do
+    assert bounds_to_dimension_size({0, 0, 3, 0}) === 4
+    assert bounds_to_dimension_size({0, 200, 3, 300}) === 4
+    assert bounds_to_dimension_size({-2, nil, 2, nil}) === 5
+    assert bounds_to_dimension_size({-5, 0, 4, 0}) === 10
+    assert bounds_to_dimension_size({0, 0, 0, 0}) === 1
+  end
 end
